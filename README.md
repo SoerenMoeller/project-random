@@ -1,5 +1,5 @@
 # project-random
-The goal is to create a video involving science communication. We are using (3Blue1Brown)[https://www.youtube.com/@3blue1brown]s work as inspiration. 
+The goal is to create a video involving science communication. We are using [3Blue1Brown](https://www.youtube.com/@3blue1brown)s work as inspiration. 
 
 ---
 
