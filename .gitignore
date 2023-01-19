@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# exclude the media, so the rendered videos are not in the repo
+media/
