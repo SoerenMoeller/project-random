@@ -14,12 +14,10 @@ The main topic is "randomness" in computer systems.
 - Is this a usefull approach for all use cases?
 - True random number generators
 
-Script:  
-Cold Opener
+## Script:  
+- Cold Opener
 
-- Einschub
-Existiert echter Zufall?
--
+> Einschub: Existiert echter Zufall?
 
 Computer sind dafür konstruiert, deterministisch (also vorhersehbar) zu arbeiten. 
 Das ist wichtig, da Berechnungen im allgemeinen präzise sein sollen und die Korrektheit 
