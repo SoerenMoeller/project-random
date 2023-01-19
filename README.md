@@ -14,5 +14,5 @@ The main topic is "randomness" in computer systems.
 - Is this a usefull approach for all use cases?
 - True random number generators
 
-## Basic Structure
-- TODO
+Script:  
+- **1**:
