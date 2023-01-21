@@ -39,7 +39,6 @@ class Halton(Scene):
         self.play(AnimationGroup(*animations, lag_ratio=DELAY))
 
 
-
 class BlackBoxRandom(Scene):
     def construct(self):
         # setup constants
@@ -74,16 +73,16 @@ class BlackBoxRandom(Scene):
         self.wait(3)
 
         # shift box and fade in the lines
-        self.play(FadeIn(box))
+        self.play(Create(box))
         self.play(box.animate.shift(RIGHT * BOX_SHIFT_RIGHT))
-        self.play(FadeIn(loop_lines))
+        self.play(Create(loop_lines))
         self.wait(3)
 
         # shift in the initial seed
         seed = Tex("78")
         seed.move_to([LINE_LEFT, 10, 0])  
         text_y = 1.5
-        self.play(seed.animate(run_time=2).shift(DOWN * (10 - text_y)), FadeIn(dot_1))
+        self.play(seed.animate(run_time=2).shift(DOWN * (10 - text_y)), Create(dot_1))
         self.wait(2)
         seed_text = Tex("Seed:").next_to(seed, LEFT, buff=0.5)
         self.play(Write(seed_text))
