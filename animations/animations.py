@@ -1,21 +1,161 @@
 from manim import *
+from math import cos, sin
 
 
 class Intro(Scene):
     def construct(self):
-        cold_opener = Tex("Computer haben einen eigenen Willen.")
-        sub_title = Tex("Stimmt das?")
+        cold_opener = Tex("Computer können keinen Zufall")
+        sub_title = Tex("Wie kann das sein?")
         VGroup(cold_opener, sub_title).arrange(DOWN)
 
+        # write title
+        self.wait(1)
         self.play(Write(cold_opener))
         self.wait(2)
-        self.play(FadeIn(sub_title, shift=DOWN))
+        self.play(Write(sub_title))
+        self.wait(3)
+
+        # keep title at top
+        self.play(
+            cold_opener.animate.to_corner(UP + RIGHT),
+            FadeOut(sub_title)
+        )
+        self.wait(1)
+
+        # declare typical use cases
+
+
+        self.wait(5)
+
+
+class Test(ThreeDScene):
+    def construct(self):
+        # bug when using cashed data
+        config.flush_cache = True
+        self.camera.background_color=WHITE
+
+        COIN_POSITION = np.array([0, 0, 0])
+        COIN_SIZE = 0.5
+        COIN_THICKNESS = COIN_SIZE / 8
+        AMOUNT_OF_EDGES = 10
+        GOLD_COLOR = "#FFD700"
+        DARKER_GOLD_COLOR = "#B59902"
+
+        # create top and bottom of the coin
+        circle_1 = Circle(COIN_SIZE, color=BLACK, fill_color=GOLD_COLOR, fill_opacity= 1, shade_in_3d=True)
+        circle_0 = Circle(COIN_SIZE, color=BLACK, fill_color=GOLD_COLOR, fill_opacity= 1, shade_in_3d=True)
+        circle_0.move_to(add_offset(COIN_POSITION, COIN_THICKNESS / 2))
+        circle_1.move_to(add_offset(COIN_POSITION, - COIN_THICKNESS / 2))
+
+        # create number
+        num_width = COIN_SIZE / 4
+        offset_number = np.array([0, 0, COIN_THICKNESS / 2 + 0.01]) + COIN_POSITION
+        num_border = [
+            np.array([-num_width / 2, -COIN_SIZE * 3/8, 0]) + offset_number,
+            np.array([num_width / 2, -COIN_SIZE * 3/8, 0]) + offset_number,
+            np.array([num_width / 2, COIN_SIZE * 3/8, 0]) + offset_number,
+            np.array([-num_width / 2, COIN_SIZE * 3/8, 0]) + offset_number,
+            np.array([-num_width, COIN_SIZE * 3/8 - num_width / 2, 0]) + offset_number,
+            np.array([-num_width / 2, COIN_SIZE * 3/8 - num_width, 0]) + offset_number
+        ]
+        number = Polygon(*num_border, shade_in_3d=True, fill_color=DARKER_GOLD_COLOR, fill_opacity=1, color=BLACK)
+
+        # create head
+        offset_head = np.array([0, 0, -COIN_THICKNESS / 2 - 0.01]) + COIN_POSITION
+        head_border = [
+            np.array([-1/5 * COIN_SIZE, -3/8 * COIN_SIZE, 0]) + offset_head,
+            np.array([-1/5 * COIN_SIZE, -2/8 * COIN_SIZE, 0]) + offset_head,
+            np.array([-2/5 * COIN_SIZE, -1/8 * COIN_SIZE, 0]) + offset_head,
+            np.array([-2/5 * COIN_SIZE, 1/8 * COIN_SIZE, 0]) + offset_head,
+            np.array([0, 3/8 * COIN_SIZE, 0]) + offset_head,
+            np.array([3/10 * COIN_SIZE, 3/16 * COIN_SIZE, 0]) + offset_head,
+            np.array([3/10 * COIN_SIZE, -1/8 * COIN_SIZE, 0]) + offset_head,
+            np.array([1/5 * COIN_SIZE, -2/8 * COIN_SIZE, 0]) + offset_head,
+            np.array([1/5 * COIN_SIZE, -3/8 * COIN_SIZE, 0]) + offset_head
+        ]
+        head = Polygon(*head_border, shade_in_3d=True, fill_color=DARKER_GOLD_COLOR, fill_opacity=1, color=BLACK).rotate(PI).rotate(PI, axis=UP)
+        
+        # create side pieces, determine points first, use angles for that 
+        step = PI / AMOUNT_OF_EDGES
+        degree = 0
+        left = []
+        right = []
+        while degree < PI:
+            # left side
+            vector = [- sin(degree), - cos(degree), 0]
+            vector_normalized = vector / np.linalg.norm(vector)
+            position = vector_normalized * COIN_SIZE
+            left.append(position)
+
+            # right side
+            vector = [sin(degree), cos(degree), 0]
+            vector_normalized = vector / np.linalg.norm(vector)
+            position = vector_normalized * COIN_SIZE
+            right.append(position)
+
+            degree += step
+        positions = left + right
+
+        # create squares between the positions
+        borders = []
+        for i in range(len(positions)):
+            current = i
+            next = i + 1 if i != len(positions) - 1 else 0
+
+            square_pos = [
+                add_offset(positions[current], COIN_THICKNESS / 2),
+                add_offset(positions[current], -COIN_THICKNESS / 2),
+                add_offset(positions[next], -COIN_THICKNESS / 2),
+                add_offset(positions[next], COIN_THICKNESS / 2),
+            ]
+
+            borders.append(Polygon(*square_pos, color=BLACK, fill_color=GOLD_COLOR, fill_opacity=1, shade_in_3d=True))
+
+
+        # init coin
+        container = VGroup(head, number, circle_0, circle_1, *borders)
+
+        # start anim
+        height = 0.25
+        rotation = PI / 4
+        toss_time = 1
+        toss_func = rate_functions.ease_in_out_sine
+        self.play(
+            UpdateFromAlphaFunc(
+                container, 
+                lambda coin, alpha: coin.shift(height * UP * alpha).rotate(rotation * alpha, axis=RIGHT),
+                run_time=toss_time,
+                rate_func=toss_func 
+            )
+        )
+        self.play(
+            UpdateFromAlphaFunc(
+                container, 
+                lambda coin, alpha: coin.shift(height * DOWN * alpha).rotate(rotation * alpha, axis=RIGHT),
+                run_time=toss_time,
+                rate_func=toss_func 
+            )
+        )
+        
+
+
+
+def update_toss_animation(coin, alpha):
+    coin.restore()
+    coin.become(
+        coin.shift(interpolate)
+    )
+
+
+def add_offset(position, offset):
+    return position + np.array([0, 0, offset])
 
 
 class LavaLamp(Scene):
     def construct(self):
         title = Tex(r"Wie wird echter Zufall simuliert?")
         VGroup(title).arrange(DOWN)
+
         self.play(
             Write(title),
         )
