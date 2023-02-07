@@ -1,0 +1,5 @@
+CREATE_BORDER = "create_border"
+FADE_IN_ANIM = "fade_in_animation"
+CREATE_ANIM = "create_animation"
+PLAY_ANIM = "play_animation"
+INIT_ROTATION = "initial_rotation"
