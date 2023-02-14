@@ -1,57 +1,262 @@
 from manim import *
-from animation_setup.coin_toss import create_coin_toss
+from animation_setup.coin_toss import create_coin_toss, add_toss_animation
 from animation_setup.maze_creation import create_maze
-from constants import CREATE_BORDER, FADE_IN_ANIM, CREATE_ANIM, PLAY_ANIM, INIT_ROTATION
+from animation_setup.determinism_box import create_box, add_number_animation
+from constants import *
+
+
+TEMPLATE = TexTemplate()
+TEMPLATE.add_to_preamble(r"\usepackage{ulem}")
+COLD_OPENER = Tex("Computer können keinen Zufall")
+COLD_OPENER_STRIKED = Tex("\sout{Computer können keinen Zufall}", tex_template=TEMPLATE)
 
 
 class Intro(Scene):
     def construct(self):
-        cold_opener = Tex("Computer können keinen Zufall")
+        self.camera.background_color=BACKGROUND_COLOR
+
         sub_title = Tex("Wie kann das sein?")
-        VGroup(cold_opener, sub_title).arrange(DOWN)
+        VGroup(COLD_OPENER, sub_title).arrange(DOWN)
 
         # write title
         self.wait(1)
-        self.play(Write(cold_opener))
+        self.play(Write(COLD_OPENER))
         self.wait(2)
         self.play(Write(sub_title))
         self.wait(3)
 
         # keep title at top
         self.play(
-            cold_opener.animate.to_corner(UP + RIGHT),
+            COLD_OPENER.animate.to_corner(UP + RIGHT),
             FadeOut(sub_title)
         )
-        self.wait(1)
-
-        # declare typical use cases
 
 
-        self.wait(5)
-
-
-class MazeCreation(Scene):
+class IntroduceRandomness(ThreeDScene):
     def construct(self):
-        animations = create_maze()
+        self.camera.background_color=BACKGROUND_COLOR
+
+        COLD_OPENER.to_corner(UP + RIGHT)
+        self.add(COLD_OPENER)
+
+        randomness_text = Tex("Was ist Zufall?")
+        answer_in_place = Tex("Ein Ereignis, dessen Ausgang nicht vorhersehbar ist.", font_size=LOWER_FONT_SIZE)
+        self.play(Write(randomness_text)) 
+        self.play(randomness_text.animate.to_corner(UP + LEFT))       
+        VGroup(randomness_text, answer_in_place).to_corner(UP + LEFT).arrange(DOWN, center=False, aligned_edge=LEFT, buff=0.8)  
+
+        self.wait(3)
+        answer = Tex("Ein Ereignis, dessen Ausgang nicht vorhersehbar ist.")
+        self.play(Write(answer))
+
+        self.wait(1)
+        self.play(Transform(answer, answer_in_place))
+
+        # introduce coin toss
+        animations = create_coin_toss(rotate=False)
+
+        self.play(animations[CREATE_ANIM])
+        self.play(animations[SHIFT_ANIM])
+
+        add_toss_animation(animations, animations[OBJECT])
+        self.play(animations[INIT_ROTATION])
+
+
+def construct_randomness_scene(scene):
+    scene.camera.background_color=BACKGROUND_COLOR
+    COLD_OPENER.to_corner(UP + RIGHT)
+    randomness_text = Tex("Was ist Zufall?")
+    answer_in_place = Tex("Ein Ereignis, dessen Ausgang nicht vorhersehbar ist.", font_size=LOWER_FONT_SIZE)
+    randomness_text.to_corner(UP + LEFT)
+    VGroup(randomness_text, answer_in_place).to_corner(UP + LEFT).arrange(DOWN, center=False, aligned_edge=LEFT, buff=.8)  
+    scene.add(COLD_OPENER, randomness_text, answer_in_place)
+
+    return randomness_text, answer_in_place
+
+
+class IntroduceRandomnessHeadHead(ThreeDScene):
+    def construct(self):
+        construct_randomness_scene(self)
+
+        animations = create_coin_toss()
+        self.play(animations[PLAY_ANIM])
+
+
+class IntroduceRandomnessHeadTail(ThreeDScene):
+    def construct(self):
+        construct_randomness_scene(self)
+
+        animations = create_coin_toss(half=True)
+        self.play(animations[PLAY_ANIM])
+
+
+class IntroduceRandomnessTailTail(ThreeDScene):
+    def construct(self):
+        construct_randomness_scene(self)
+
+        animations = create_coin_toss(heads_up=False)
+        self.play(animations[PLAY_ANIM])
+
+
+class IntroduceRandomnessTailHead(ThreeDScene):
+    def construct(self):
+        construct_randomness_scene(self)
+
+        animations = create_coin_toss(heads_up=False, half=True)
+        self.play(animations[PLAY_ANIM])
+
+
+class RemoveRandomness(ThreeDScene):
+    def construct(self):
+        randomness_text, answer = construct_randomness_scene(self)
+
+        animations = create_coin_toss()
+        self.play(FadeOut(animations[OBJECT]), Unwrite(randomness_text), Unwrite(answer))
+
+
+class ShowExamplesInit(ThreeDScene):
+    def construct(self):
+        self.camera.background_color=BACKGROUND_COLOR
+        COLD_OPENER.to_corner(UP + RIGHT)
+        self.add(COLD_OPENER)
+
+        example_text = Tex("Anwendungen")
+        self.play(Write(example_text))
+
+        self.wait(1)
+        self.play(example_text.animate.to_corner(LEFT + UP))
+
+
+class ShowExamplesCoinInit(ThreeDScene):
+    def construct(self):
+        self.camera.background_color=BACKGROUND_COLOR
+        COLD_OPENER.to_corner(UP + RIGHT)
+        example_text = Tex("Anwendungen").to_corner(LEFT + UP)
+        self.add(COLD_OPENER, example_text)
+
+        animations = create_coin_toss(heads_up=False, half=True, rotate=False, big_coin=False)
+        self.play(animations[CREATE_ANIM])
+        self.play(animations[SHRINK_ANIM])
+        self.play(animations[OBJECT].animate.move_to(SMALL_POSITION))
+
+        add_toss_animation(animations, animations[OBJECT], half=True)
+        self.play(animations[INIT_ROTATION])
+        self.play(animations[PLAY_ANIM])
+
+
+def construct_examples_scene(scene):
+    scene.camera.background_color=BACKGROUND_COLOR
+    COLD_OPENER.to_corner(UP + RIGHT)
+    example_text = Tex("Anwendungen").to_corner(LEFT + UP)
+    scene.add(COLD_OPENER, example_text)
+
+
+class ShowExamplesCoinHeadHead(ThreeDScene):
+    def construct(self):
+        construct_examples_scene(self)
+
+        animations = create_coin_toss(big_coin=False)
+        add_toss_animation(animations, animations[OBJECT])
+        self.play(animations[PLAY_ANIM])
+
+
+class ShowExamplesCoinHeadTail(ThreeDScene):
+    def construct(self):
+        construct_examples_scene(self)
+
+        animations = create_coin_toss(half=True, big_coin=False)
+        add_toss_animation(animations, animations[OBJECT])
+        self.play(animations[PLAY_ANIM])
+
+
+class ShowExamplesCoinTailTail(ThreeDScene):
+    def construct(self):
+        construct_examples_scene(self)
+
+        animations = create_coin_toss(heads_up=False, big_coin=False)
+        add_toss_animation(animations, animations[OBJECT])
+        self.play(animations[PLAY_ANIM])
+
+
+class ShowExamplesCoinTailHead(ThreeDScene):
+    def construct(self):
+        construct_examples_scene(self)
+
+        animations = create_coin_toss(heads_up=False, half=True, big_coin=False)
+        add_toss_animation(animations, animations[OBJECT])
+        self.play(animations[PLAY_ANIM])
+
+
+def construct_coin_scene(scene):
+    construct_examples_scene(scene)
+    animations = create_coin_toss(big_coin=False)
+    scene.add(animations[OBJECT])
+
+    return animations[OBJECT]
+
+
+class ShowExamplesMaze(ThreeDScene):
+    def construct(self):
+        construct_coin_scene(self)
+
+        animations = create_maze(self)
         self.play(animations[CREATE_BORDER])
         self.play(animations[FADE_IN_ANIM])
         self.play(animations[CREATE_ANIM])
-        self.play(animations[PLAY_ANIM])
-                
 
-class CoinToss(ThreeDScene):
+
+class ShowExamplesMazeCreation(ThreeDScene):
     def construct(self):
-        self.camera.background_color=WHITE
-        animations = create_coin_toss()
+        coin = construct_coin_scene(self)
 
+        animations = create_maze(self)
+        self.play(animations[PLAY_ANIM])
+
+        self.wait(1)
+
+        # now show further bulletspoints
+        bullet_points = [
+            Tex(r"\textbullet \; Simulationen", font_size=BULLET_POINT_SIZE), Tex(r"\textbullet \; Spiele", font_size=BULLET_POINT_SIZE), 
+            Tex(r"\textbullet \; Kryptographie", font_size=BULLET_POINT_SIZE), Tex(r"\textbullet  \; ...", font_size=BULLET_POINT_SIZE)
+        ]
+
+        VGroup(*bullet_points).arrange(DOWN, center=True, aligned_edge=LEFT).move_to([4, 0, 0])
+
+        for point in bullet_points:
+            self.play(Write(point))
+
+        self.wait(2)
+
+        # destroy scene
+        self.play(FadeOut(coin), *[Unwrite(point) for point in bullet_points])
+        self.play(animations[UNCREATE_WALLS])
+        self.play(animations[BUG_FIX_FILL])
+
+            
+class StrikeOpener(Scene):
+    def construct(self):
+        self.camera.background_color=BACKGROUND_COLOR
+        COLD_OPENER.to_corner(UP + RIGHT)
+
+        self.play(COLD_OPENER.animate.move_to([0, 0, 0]))
+        self.wait(1)
+        self.play(Transform(COLD_OPENER, COLD_OPENER_STRIKED))
+        self.wait(1)
+        self.play(COLD_OPENER_STRIKED.animate.to_corner(UP + RIGHT))
+
+
+class DeterminismInit(Scene):
+    def construct(self):
+        self.camera.background_color=BACKGROUND_COLOR
+        COLD_OPENER_STRIKED.to_corner(UP + RIGHT)
+
+        animations = create_box()
         self.play(animations[CREATE_ANIM])
-        self.play(animations[INIT_ROTATION])
-        self.wait(2)
 
-        self.play(animations[PLAY_ANIM])
-        self.wait(2)
+        add_number_animation(animations, 3)
         self.play(animations[PLAY_ANIM])
 
+        
 
 
 class LavaLamp(Scene):
