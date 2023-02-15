@@ -252,11 +252,19 @@ class DeterminismInit(Scene):
 
         animations = create_box()
         self.play(animations[CREATE_ANIM])
+        self.wait(1)
+        self.play(Wiggle(animations[OBJECT]))
+        add_number_animation(animations, self, 3)
 
-        add_number_animation(animations, 3)
-        self.play(animations[PLAY_ANIM])
 
-        
+class DeterminismNumbers(Scene):
+    def construct(self):
+        self.camera.background_color=BACKGROUND_COLOR
+        COLD_OPENER_STRIKED.to_corner(UP + RIGHT)
+
+        animations = create_box()
+        self.add(animations[OBJECT])
+        add_number_animation(animations, self, 4)
 
 
 class LavaLamp(Scene):
