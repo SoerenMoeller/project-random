@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 if [ -z ${1+x} ]; then 
     echo "Usage: ./run_animation.sh [scene-name]";

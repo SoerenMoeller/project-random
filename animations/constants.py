@@ -1,13 +1,12 @@
 from manim import *
 
-
 OBJECT = "object"
 BUG_FIX_FILL = "bug_fix_fill"
 BACKGROUND_COLOR = "#292929"
 
 LOWER_FONT_SIZE = 25
+MIDDLE_FONT_SIZE = 30
 BULLET_POINT_SIZE = 31
-
 
 # constants to access animations
 CREATE_BORDER = "create_border"
