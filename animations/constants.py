@@ -28,7 +28,8 @@ COIN_TAIL_HEAD_ANIM = "coin_tail_head_animation"
 ### settings for timing etc
 # maze 
 MAZE_WIDTH = 3
-AMOUNT_OF_CELLS = 2
+MAZE_SEED = 5
+AMOUNT_OF_CELLS = 8
 TRACE_SIZE = 4
 TRANSITION_TIME = 0.2
 MAZE_POSITION = np.array([-0.5, -0.5, 0])
@@ -42,4 +43,8 @@ COIN_SIZE = 0.8
 COIN_THICKNESS = COIN_SIZE / 8
 GOLD_COLOR = "#FFD700"
 DARKER_GOLD_COLOR = "#B59902"
-TOSS_TIME = 3
+TOSS_TIME = 2.5
+
+# determinsm
+BOX_SIZE = 2
+SMALLER_BOX_SHRINK = .7

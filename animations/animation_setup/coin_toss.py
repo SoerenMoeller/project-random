@@ -9,7 +9,7 @@ Problem: Can not manage to alter the coin sides between the throws, so I have to
 
 
 CURRENT_DEGREE = 0
-TOSS_PITCH = np.array([0, 5.5, 0])
+TOSS_PITCH = np.array([0, 2.5, 0]) #2.5 in small, 3.5 in big
 
 
 def pow(i, j):
@@ -25,13 +25,12 @@ def create_coin_toss(heads_up=True, rotate=True, half=False, big_coin=True):
 
     animations[CREATE_ANIM] = FadeIn(coin, lag_ratio=0)
     if big_coin:
-        COIN_POSITION = coin.get_center() - COIN_BIG_SHIFT
-
         if not rotate:
             animations[SHIFT_ANIM] = coin.animate.shift(COIN_BIG_SHIFT)
             return animations
 
         coin.shift(COIN_BIG_SHIFT)
+        COIN_POSITION = coin.get_center()
         add_toss_animation(animations, coin, half)
         return animations
 
